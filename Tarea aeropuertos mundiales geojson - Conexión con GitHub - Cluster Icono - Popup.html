@@ -1,0 +1,140 @@
+	<html>
+<head>
+	<title>Mapa</title>
+	<meta charset = "UTF-8">
+	<!-- esta parte sirve para agregar el titulo y sub titulo a visor-->
+		<h1 style="text-align:center;"> Mapa de AEROPUERTOS del mundo con marcadores GeoJSON conectado a GitHub - Cluster Icono - Popup </h1>
+		<h2 style="text-align:center;"> Elaborado por: Milton Daniel Suarez Intriago </h3>
+		<h2 style="text-align:center;"> Maestría en GEOMÁTICA Universidad Técnica de Manabí</h3>
+	
+	<!-- la api utilizada de leaflet -->	
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+	
+	<!--Pantalla completa-->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet.fullscreen@latest/Control.FullScreen.css" />
+	<script src="https://unpkg.com/leaflet.fullscreen@latest/Control.FullScreen.js"></script>
+	
+    <!-- Leaflet MarkerCluster CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.Default.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js"></script>
+<!--	
+	<style>
+	 propiedades del contenedor del html y del mapa
+		html,body{
+			height:100%;
+			margin:0;
+		}
+		.leaflet-container{
+			height:400px;
+			width:600px;
+			max-width:100%;
+			max-height:100%;
+		}
+	</style>-->
+		
+</head>
+<body>
+
+	<div id="mapa" style= "width:100%; height:400px; border: 2px solid #004bad;"></div>
+	
+	<style>
+	html,body{
+			height:100%;
+			margin:20px;
+			background:#d2e2f7;
+		}
+	</style>
+	
+	
+	<script>
+	
+	
+	var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+		});
+		
+	
+	var ggl= L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+		attribution: '&copy; <a href="http://www.idesa.gob.ar/2021/03/25/mas-mapas-xyz-tiles/">Google Hybrid</a>'
+	});
+	
+	
+	var gglmps= L.tileLayer('https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}', {
+		attribution: '&copy; <a href="http://www.idesa.gob.ar/2021/03/25/mas-mapas-xyz-tiles/">Google Maps</a>'
+	});
+	
+	
+	var map = L.map("mapa",{
+		center:[-1.815334, -78.342163],
+		zoom:6,
+		layers:ggl,
+		fullscreenControl:true,
+		fullscreenControlOptions:{position:"topleft"}
+		});
+	
+<!-- personalización del icon	
+	var icono = L.icon({
+	 iconUrl:"https://media.tenor.com/Z6sMOpVRG78AAAAj/searching-loading.gif",
+	 iconSize:[35,35],
+	 iconAnchor:[15,15],
+	 popupAnchor:[1,-30]
+	});
+
+	<!-- Crear grupo de cluster
+	
+	var grupo = L.markerClusterGroup();
+
+	
+	<!--Agregar la conexión a GitHub del GeoJSON 	como puntos-->
+	
+    fetch("https://raw.githubusercontent.com/Antonio20252025/Procedimiento/refs/heads/main/Aeropuertos.geojson")
+	.then ((response)=> response.json())
+	.then ((datos)=>{
+	   var capa = L.geoJson(datos,{
+	    //personalizando el icon
+	        pointToLayer: function(feature, coordenadas){
+			return L.marker(coordenadas, {icon:icono});
+			},
+		//Pestaña emergente
+		    onEachFeature: function (feature, capa){
+			capa.bindPopup("<strong>Aeropuerto: </strong>"+ feature.properties['Value.name'] + "<br>" +
+			"<strong>Ciudad: </strong>"+ feature.properties['Value.city'] + "<br>" +
+			"<strong>Pais: </strong>"+ feature.properties['Value.country']+ "<br>" +
+			"<strong>Estado: </strong>"+ feature.properties['Value.state']+ "<br>" +
+			"<strong>IATA: </strong>"+ feature.properties['Value.iata']
+			
+			);
+		//Aparezca al pasar sobre el puntos
+            capa.on("mouseover",function(){this.openPopup();});
+		//Apagar al salir del punto
+		    capa.on("mouseout",function(){this.closePopup();});
+			}
+			
+	   });
+	   
+	   // agregando el grupo  
+	   grupo.addLayer(capa);
+	   //agregar el grupo al Mapa
+	   map.addLayer(grupo);
+	   });
+	
+	var basemaps = {
+		"Open Street Maps": osm,
+		"Google Hybrid": ggl,
+		"Google Maps": gglmps
+	};
+
+	L.control.layers(basemaps).addTo(map);
+	
+	
+	</script>
+
+
+
+
+</body>
+
+
+</html>
